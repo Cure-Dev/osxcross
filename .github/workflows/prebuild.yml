@@ -1,0 +1,21 @@
+name: Pre-build osxcross
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-linux-x86-64:
+    runs-on: ubuntu_latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: build and archive
+        run: |
+          UNATTENDED=1 TARGET_DIR=${{github.workspace}}/osxcross ./build.sh
+          tar -cvf osxcross.tar osxcross
+          xz -9 osxcross.tar
+      - name: post artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: osxcross-linux-x86-64.tar.xz
+          path: osxcross.tar.xz
